@@ -47,7 +47,7 @@ memory_alloc:
         cmp brk_cur, %r12           # compara o endereco do bloco com o brk_cur
         jge _fora_laco_malloc       # end >= brk_cur
 
-        cmp $0, (%r12)
+        cmpq $0, (%r12)
         jne _fim_laco_malloc        # [end] == 0
 
         movq 8(%r12), %r13          # size
@@ -119,7 +119,7 @@ memory_free:
     jl _retorno_zero
     cmp %r12, brk_cur
     jl _retorno_zero
-    cmp $0, (%r12)
+    cmpq $0, (%r12)
     je _retorno_zero
 
     movq $0, (%r12)

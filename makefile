@@ -4,7 +4,7 @@ CC = gcc
 
 AS = as
 
-CFLAGS = -Wall -g -no-pie
+CFLAGS = -g -no-pie
 
 LFLAGS = -lm
 
