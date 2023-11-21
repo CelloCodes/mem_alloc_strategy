@@ -5,7 +5,6 @@
 
 void *current_brk = 0, *original_brk = 0;
 
-
 // obtem o endereco de brk
 void setup_brk()
 {
@@ -75,16 +74,8 @@ int memory_free( void *p )
     if (*nP == 0)
         return 0;
 
-
     *nP = 0;
     int ret = 1;
-
-    // devo me preocupar em modificar o brk enquanto uso ou so ao final
-    //unsigned long long size = *(nP+ 1);
-    //if (p + 16 + size >= current_brk) {
-    //    // procurar ultimo bloco marcado como em uso?
-    //    current_brk = p;
-    //}
 
     return (ret != -1);
 }

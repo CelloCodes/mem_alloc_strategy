@@ -5,7 +5,6 @@
 
 void *brk_cur = 0, *brk_orig = 0;
 
-
 // obtem o endereco de brk
 void setup_brk()
 {
@@ -53,12 +52,9 @@ void *memory_alloc( unsigned long long bytes )
     int ret = brk(blockAddr + 16 + bytes);
     if (ret == -1) return NULL;
     brk_cur = sbrk(0);
-    //if (blockAddr == -1)
-    //    return NULL;
 
     *((unsigned long long *)blockAddr) = 1;
     *((unsigned long long *)(blockAddr + 8)) = bytes;
-    //brk_cur += (bytes + 16);
 
     return blockAddr+16;
 }
@@ -75,16 +71,8 @@ int memory_free( void *p )
     if (*nP == 0)
         return 0;
 
-
     *nP = 0;
     int ret = 1;
-
-    // devo me preocupar em modificar o brk enquanto uso ou so ao final
-    //unsigned long long size = *(nP+ 1);
-    //if (p + 16 + size >= brk_cur) {
-    //    // procurar ultimo bloco marcado como em uso?
-    //    brk_cur = p;
-    //}
 
     return (ret != -1);
 }
