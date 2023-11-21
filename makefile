@@ -8,7 +8,7 @@ CFLAGS = -g -no-pie
 
 LFLAGS = -lm
 
-OBJECTS = main.o memory.o
+OBJECTS = main.o memalloc.o
 
 PROGRAM_NAME = main
 
@@ -22,8 +22,8 @@ $(PROGRAM_NAME): $(OBJECTS)
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
-memory.o: memory.s
-	$(AS) $(CFLAGS) -c memory.s -o memory.o
+memalloc.o: memalloc.s
+	$(AS) $(CFLAGS) -c memalloc.s -o memalloc.o
 
 clean:
 	rm -rf $(OBJECTS)

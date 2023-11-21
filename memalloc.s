@@ -1,9 +1,9 @@
 .section .bss
-    .global brk_orig
-    .global brk_cur
+    .global original_brk
+    .global current_brk
 
-    .lcomm brk_orig 8
-    .lcomm brk_cur 8
+    .lcomm original_brk 8
+    .lcomm current_brk 8
 
 .section .text
 .global setup_brk
@@ -19,8 +19,8 @@ setup_brk:
     movq $12, %rax
     syscall
 
-    movq %rax, brk_orig
-    movq %rax, brk_cur
+    movq %rax, original_brk
+    movq %rax, current_brk
 
     popq %rbp
     ret
@@ -29,8 +29,8 @@ dismiss_brk:
     pushq %rbp
     movq %rsp, %rbp
 
-    movq brk_orig, %rdi
-    movq %rdi, brk_cur
+    movq original_brk, %rdi
+    movq %rdi, current_brk
     movq $12, %rax
     syscall
 
@@ -42,15 +42,15 @@ memory_alloc:
     movq %rsp, %rbp
     movq %rdi, %r15
 
-    movq brk_orig, %r12
+    movq original_brk, %r12
     _ini_laco_malloc:
-        cmp brk_cur, %r12           # compara o endereco do bloco com o brk_cur
-        jge _fora_laco_malloc       # end >= brk_cur
+        cmp current_brk, %r12           # compara o endereco do bloco com o current_brk
+        jge _fora_laco_malloc       # end >= current_brk
 
+        movq 8(%r12), %r13          # size
         cmpq $0, (%r12)
         jne _fim_laco_malloc        # [end] == 0
 
-        movq 8(%r12), %r13          # size
         movq %r15, %r14             # bytes
         cmp %r13, %r14
         jg _fim_laco_malloc         # bytes > size
@@ -79,7 +79,7 @@ memory_alloc:
 
         _fim_laco_malloc:
         addq $16, %r12              # incrementa o endereco do bloco em 16
-        addq %r15, %r12             # incrementa o endereco do bloco em size
+        addq %r13, %r12             # incrementa o endereco do bloco em size
         jmp _ini_laco_malloc        # pula para o inicio do loop
 
     _fora_laco_malloc:
@@ -89,11 +89,11 @@ memory_alloc:
     movq $12, %rax              # seta syscall de brk
     syscall
 
-    cmp brk_cur, %rax
-    je _retorno_null            # retorno_brk == brk_cur
+    cmp current_brk, %rax
+    je _retorno_null            # retorno_brk == current_brk
 
-    movq brk_cur, %r13          # move o brk_cur para r13
-    movq %rax, brk_cur          # move o retorno do brk para brk_cur
+    movq current_brk, %r13          # move o current_brk para r13
+    movq %rax, current_brk          # move o retorno do brk para current_brk
     movq $1, (%r13)             # [end] = 1
     movq %r15, %rcx             # move bytes para rcx
     movq %rcx, 8(%r13)          # [end+8] = bytes
@@ -115,9 +115,9 @@ memory_free:
 
     movq %rdi, %r12
     subq $16, %r12
-    cmp brk_orig, %r12
+    cmp original_brk, %r12
     jl _retorno_zero
-    cmp %r12, brk_cur
+    cmp %r12, current_brk
     jl _retorno_zero
     cmpq $0, (%r12)
     je _retorno_zero

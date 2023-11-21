@@ -1,7 +1,7 @@
 #ifndef _MEMORY_H_
 #define _MEMORY_H_
 
-extern void *brk_orig, *brk_cur;
+extern void *original_brk, *current_brk;
 
 void setup_brk();
 
